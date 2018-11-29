@@ -1,0 +1,3 @@
+[submodule "MTGProxyPrinter"]
+	path = MTGProxyPrinter
+	url = https://github.com/Yoz0/MTGProxyPrinter/
