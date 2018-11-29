@@ -1,0 +1,238 @@
+<head>
+	<meta charset="UTF-8">
+	<title>MTG Proxy Printer</title>
+	<link rel="stylesheet" type="text/css" href="../elements.css" >
+	<script src="parse-and-scry.js">
+	</script>
+	<script>
+
+	// set by getImagesFromServer to the answer of the server
+	var currentIntermediaryDeck = null
+
+
+	/*
+	 * queries scryfall itself instead of relying on the server
+	 *
+	 */
+	function getImages()
+	{
+		var cards = document.getElementById("deckList").value
+		cards = parse(cards)
+		cards = scry(cards)
+
+		currentIntermediaryDeck = cards
+
+
+		document.getElementById("cardList").innerHTML = ""
+
+		for (var i in cards)
+		{
+			var d = document.createElement("div")
+			d.id = "card"+i
+			d.className="cardCard"
+			console.log("GG", i, cards[i], cards[i].alternatives)
+			if (cards[i].alternatives.length == 1)
+			{
+				var inn = `<span class="ambiguityMarker" id="marker${i}"><span style="color:#0E0">&#x2713;</span></span><span class="cardTitle">${cards[i].name} <i>(${cards[i].alternatives[0].set.toUpperCase()})</i></span>`
+			}
+			else
+			{
+				var inn = `<span class="ambiguityMarker" id="marker${i}"><span style="color:#FD0">&#x2699;</span></span><span class="cardTitle">${cards[i].name}</span><br/><form action="" >`
+				for (var j in cards[i].alternatives)
+				{
+					inn+=`<div style="display:inline-block; margin-right:1px;">
+					<input type="radio" id="card${i}_${cards[i].alternatives[j].set.toUpperCase()}_${cards[i].alternatives[j].no}"
+					name="card${i}art">
+					<label for="card${i}_${cards[i].alternatives[j].set.toUpperCase()}_${cards[i].alternatives[j].no}">
+					${cards[i].alternatives[j].set.toUpperCase()}<br/>
+					<img src="${cards[i].alternatives[j].url}"
+						   style="height:7em"
+						   alt="${cards[i].alternatives[j].set.toUpperCase()}/${cards[i].alternatives[j].no}">
+					<label>
+					</div>`
+				}
+				inn+="</form>"
+			}
+			d.innerHTML=inn
+			document.getElementById("cardList").appendChild(d)
+		}
+
+	}
+
+	/**
+	 * sends decklist to server and gets list of card with image links in it.
+	 */
+	function getImagesFromServer()
+	{
+		var req = new XMLHttpRequest()
+		req.open("POST", "get-json.php")
+		req.onreadystatechange = function()
+		{
+			if (this.readyState != 4 ||  this.status != 200)
+				return
+			//console.log(req.response.toString())
+			if (req.response == "")
+			{ }
+			else
+			{
+				var cards  = JSON.parse(req.response).cards
+				currentIntermediaryDeck = cards
+				for (var i in cards)
+				{
+					var d = document.createElement("div")
+					d.id = "card"+i
+					d.className="cardCard"
+					if (cards[i].alternatives.length == 1)
+					{
+						var inn = `<span class="ambiguityMarker" id="marker${i}"><span style="color:#0E0">&#x2713;</span></span><span class="cardTitle">${cards[i].name} <i>(${cards[i].alternatives[0].set.toUpperCase()})</i></span>`
+					}
+					else
+					{
+						var inn = `<span class="ambiguityMarker" id="marker${i}"><span style="color:#FD0">&#x2699;</span></span><span class="cardTitle">${cards[i].name}</span><br/><form action="" >`
+						for (var j in cards[i].alternatives)
+						{
+							inn+=`<div style="display:inline-block; margin-right:1px;">
+							<input type="radio" id="card${i}_${cards[i].alternatives[j].set.toUpperCase()}_${cards[i].alternatives[j].no}"
+							name="card${i}art">
+							<label for="card${i}_${cards[i].alternatives[j].set.toUpperCase()}_${cards[i].alternatives[j].no}">
+							${cards[i].alternatives[j].set.toUpperCase()}<br/>
+							<img src="${cards[i].alternatives[j].url}"
+							       style="height:7em"
+								   alt="${cards[i].alternatives[j].set.toUpperCase()}/${cards[i].alternatives[j].no}">
+							<label>
+							</div>`
+						}
+						inn+="</form>"
+					}
+					d.innerHTML=inn
+					document.getElementById("cardList").appendChild(d)
+				}
+			}
+		}
+		req.send("hello")
+	}
+
+
+
+
+	function getPDFfromServer()
+	{
+		var cid = currentIntermediaryDeck
+
+		if (!cid)
+		{
+			alert("Nothing loaded !")
+			return
+		}
+
+		var result = ""
+		for (var i in cid)
+		{
+			if (cid[i].alternatives.length == 1)
+				result+=`${cid[i].count} ${cid[i].name} | ${cid[i].alternatives[0].set.toUpperCase()} | ${cid[i].alternatives[0].no}\n`
+			// name is supposedly superfluous, maybe remove it
+			else
+			{
+				var a = document.getElementsByName(`card${i}art`)
+				for (var j in a)
+				{
+					if (a[j].checked)
+					{
+						var sig = a[j].id.split("_")
+						result+=`${cid[i].count} ${cid[i].name} | ${sig[1]} | ${sig[2]}`
+					}
+				}
+			}
+		}
+
+		alert(result)
+
+		
+		//TODO send request to server
+
+
+	}
+	</script>
+	<style>
+	body {
+		margin: 0;
+		padding:0;
+		font-family:sans-serif;
+	}
+	#left {
+		display:inline-block;
+		width:30%;
+		max-width:30em;
+		height:100%;
+		max-height:100%;
+		min-height:100%;
+		overflow-y:hidden;
+	}
+	#loadDeck {
+		max-height:2em;
+	}
+	#deckList {
+		width:100%;
+		height:calc(100% - 2em);
+		background-color:#FAFAFA;
+		border-style:hidden solid hidden hidden;
+	}
+
+
+
+
+	#right {
+		display:inline-block;
+		min-width:70%;
+		width:calc(100% - 30em);
+		height:100%;
+		min-height:100%;
+		max-height:100%;
+		overflow-y:hidden;;
+		overflow-x: hidden;
+	}
+
+	#cardList {
+		overflow-y:scroll;
+		height:calc(100% - 2em);
+	}
+	#getPDF {
+		text-align:right;
+		max-height:2em;
+	}
+
+
+	.cardCard {
+		margin-bottom:5px;
+		border:solid;
+		padding:1 1 1 1;
+	}
+
+	.ambiguityMarker {
+		display:inline-block;
+		vertical-align:text-top;
+		font-size:200%;
+		min-width:1em;
+	}
+
+	.cardTitle {
+		display:inline-block;
+		vertical-align:text-top;
+	}
+
+	</style>
+</head>
+<body><div id='left'>
+	<div id='loadDeck'>
+	<button disabled>Load .dec</button>  <!-- TODO -->
+	<button onClick='getImages()' style="horizontal-align:right;">Go !</button> 
+	</div>
+	<textarea id='deckList'>
+1 Shivan Dragon</textarea>
+</div><div id='right'>
+	<div id='cardList'>
+	</div>
+	<div id='getPDF'>
+	<button onClick='getPDFfromServer()'>Get PDF</button>
+	</div>
+</div></body>
