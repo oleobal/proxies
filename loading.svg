@@ -1,0 +1,44 @@
+<?xml version="1.0"  encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg viewBox="0 0 65 90" xmlns="http://www.w3.org/2000/svg">
+	<rect x="2" y="2" width="63" height="88" fill="none" stroke-width="3" stroke="black" />
+	<text x="8" y="9.5" fill="black" font-size="8" font-weight="bold">Loading</text>
+	<!-- <rect x="8" y="6.5" width="51" height="2" fill="black" stroke-width="3" stroke="black" /> -->
+	<rect x="8" y="13" width="51" height="35" fill="none" stroke-width="3" stroke="black" />
+	<text x="8" y="55" fill="black" font-size="7">Almost Instant</text>
+	<!-- <rect x="8" y="53" width="51" height="2" fill="black" stroke-width="3" stroke="black" /> -->
+	
+	<ellipse cx="33" cy="85.5" rx="2" ry="1" />
+	
+	<rect x="8" y="60" width="0" height="1" fill="black" stroke-width="3" stroke="black">
+		<!-- <animate attributeType="XML" attributeName="width" values="0; 51; 0" dur="2s" repeatCount="indefinite"/> -->
+		<animate id="anim00" dur="2s" attributeName="width" values="0; 51" keyTimes="0; 1" calcMode="spline" keySplines=".5 0 .5 1" begin="0s; anim01.end" fill="freeze" />
+		<animate id="anim01" dur="2s" attributeName="width" values="51; 0" keyTimes="0; 1" calcMode="spline" keySplines=".5 0 .5 1" begin="anim00.end" fill="freeze" />
+	</rect>
+	
+	<rect x="8" y="65" width="0" height="1" fill="black" stroke-width="3" stroke="black">
+		<animate id="anim10" dur="2s" attributeName="width" values="0; 51" keyTimes="0; 1" calcMode="spline" keySplines=".5 0 .5 1" begin="0.5s; anim11.end" fill="freeze" />
+		<animate id="anim11" dur="2s" attributeName="width" values="51; 0" keyTimes="0; 1" calcMode="spline" keySplines=".5 0 .5 1" begin="anim10.end" fill="freeze" />
+	</rect>
+	
+	<rect x="8" y="70" width="0" height="1" fill="black" stroke-width="3" stroke="black">
+		<animate id="anim20" dur="2s" attributeName="width" values="0; 51" keyTimes="0; 1" calcMode="spline" keySplines=".5 0 .5 1" begin="1s; anim21.end" fill="freeze" />
+		<animate id="anim21" dur="2s" attributeName="width" values="51; 0" keyTimes="0; 1" calcMode="spline" keySplines=".5 0 .5 1" begin="anim20.end" fill="freeze" />
+	</rect>
+	
+	<rect x="8" y="70" width="0" height="1" fill="black" stroke-width="3" stroke="black">
+		<animate id="anim30" dur="2s" attributeName="width" values="0; 51" keyTimes="0; 1" calcMode="spline" keySplines=".5 0 .5 1" begin="1.5s; anim31.end" fill="freeze" />
+		<animate id="anim31" dur="2s" attributeName="width" values="51; 0" keyTimes="0; 1" calcMode="spline" keySplines=".5 0 .5 1" begin="anim30.end" fill="freeze" />
+	</rect>
+	
+	<rect x="8" y="75" width="0" height="1" fill="black" stroke-width="3" stroke="black">
+		<animate id="anim40" dur="2s" attributeName="width" values="0; 51" keyTimes="0; 1" calcMode="spline" keySplines=".5 0 .5 1" begin="2s; anim41.end" fill="freeze" />
+		<animate id="anim41" dur="2s" attributeName="width" values="51; 0" keyTimes="0; 1" calcMode="spline" keySplines=".5 0 .5 1" begin="anim40.end" fill="freeze" />
+	</rect>
+	
+	<rect x="8" y="80" width="0" height="1" fill="black" stroke-width="3" stroke="black">
+		<animate id="anim50" dur="2s" attributeName="width" values="0; 51" keyTimes="0; 1" calcMode="spline" keySplines=".5 0 .5 1" begin="2.5s; anim51.end" fill="freeze" />
+		<animate id="anim51" dur="2s" attributeName="width" values="51; 0" keyTimes="0; 1" calcMode="spline" keySplines=".5 0 .5 1" begin="anim50.end" fill="freeze" />
+	</rect>
+</svg>
