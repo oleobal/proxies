@@ -36,16 +36,6 @@ function parse(dec)
 
 
 /**
- * generate a .dec-format list from an array of cards
- */
-function genDec(table)
-{
-	// TODO
-}
-
-
-
-/**
  * asks scryfall for teh kards
  */
 function scry(cards)

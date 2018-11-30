@@ -30,7 +30,7 @@
 			var d = document.createElement("div")
 			d.id = "card"+i
 			d.className="cardCard"
-			console.log("GG", i, cards[i], cards[i].alternatives)
+			//console.log("GG", i, cards[i], cards[i].alternatives)
 			if (cards[i].alternatives.length == 1)
 			{
 				var inn = `<span class="ambiguityMarker" id="marker${i}"><span style="color:#0E0">&#x2713;</span></span><span class="cardTitle">${cards[i].name} <i>(${cards[i].alternatives[0].set.toUpperCase()})</i></span>`
@@ -59,62 +59,6 @@
 
 	}
 
-	/**
-	 * sends decklist to server and gets list of card with image links in it.
-	 */
-	function getImagesFromServer()
-	{
-		var req = new XMLHttpRequest()
-		req.open("POST", "get-json.php")
-		req.onreadystatechange = function()
-		{
-			if (this.readyState != 4 ||  this.status != 200)
-				return
-			//console.log(req.response.toString())
-			if (req.response == "")
-			{ }
-			else
-			{
-				var cards  = JSON.parse(req.response).cards
-				currentIntermediaryDeck = cards
-				for (var i in cards)
-				{
-					var d = document.createElement("div")
-					d.id = "card"+i
-					d.className="cardCard"
-					if (cards[i].alternatives.length == 1)
-					{
-						var inn = `<span class="ambiguityMarker" id="marker${i}"><span style="color:#0E0">&#x2713;</span></span><span class="cardTitle">${cards[i].name} <i>(${cards[i].alternatives[0].set.toUpperCase()})</i></span>`
-					}
-					else
-					{
-						var inn = `<span class="ambiguityMarker" id="marker${i}"><span style="color:#FD0">&#x2699;</span></span><span class="cardTitle">${cards[i].name}</span><br/><form action="" >`
-						for (var j in cards[i].alternatives)
-						{
-							inn+=`<div style="display:inline-block; margin-right:1px;">
-							<input type="radio" id="card${i}_${cards[i].alternatives[j].set.toUpperCase()}_${cards[i].alternatives[j].no}"
-							name="card${i}art">
-							<label for="card${i}_${cards[i].alternatives[j].set.toUpperCase()}_${cards[i].alternatives[j].no}">
-							${cards[i].alternatives[j].set.toUpperCase()}<br/>
-							<img src="${cards[i].alternatives[j].url}"
-							       style="height:7em"
-								   alt="${cards[i].alternatives[j].set.toUpperCase()}/${cards[i].alternatives[j].no}">
-							<label>
-							</div>`
-						}
-						inn+="</form>"
-					}
-					d.innerHTML=inn
-					document.getElementById("cardList").appendChild(d)
-				}
-			}
-		}
-		req.send("hello")
-	}
-
-
-
-
 	function getPDFfromServer()
 	{
 		var cid = currentIntermediaryDeck
@@ -139,17 +83,39 @@
 					if (a[j].checked)
 					{
 						var sig = a[j].id.split("_")
-						result+=`${cid[i].count} ${cid[i].name} | ${sig[1]} | ${sig[2]}`
+						result+=`${cid[i].count} ${cid[i].name} | ${sig[1]} | ${sig[2]}\n`
 					}
 				}
 			}
 		}
 
 		alert(result)
+		crypto.subtle.digest("SHA-256", new TextEncoder("utf-8").encode(result))
+		.then(function (ha)
+		{
+			// https://stackoverflow.com/a/40031979/8839641
+			var hash = Array.prototype.map.call(new Uint8Array(ha), x => ('00' + x.toString(16)).slice(-2)).join('');
+			//alert(hash)
 
-		
-		//TODO send request to server
-
+			var req = new XMLHttpRequest()
+			req.open("POST", "get-pdf.php?name="+hash)
+			req.onload = function ()
+			{
+				if (!(req.response == ""))
+				{
+					alert("There seems to be an error :\n\n"+req.response)	
+					return
+				}
+				alert("Redirecting to PDF")
+				window.location.href = window.location + "pdf/"+hash+".pdf";
+				
+			}
+			req.onerror = function ()
+			{
+				alert("Error getting the PDF")
+			}
+			req.send(result)
+		})
 
 	}
 	</script>
