@@ -47,12 +47,21 @@
 					inn+=`<div style="display:inline-block; margin-right:1px;">
 					<input type="radio" id="card${i}_${cards[i].alternatives[j].set.toUpperCase()}_${cards[i].alternatives[j].no}"
 					name="card${i}art">
-					<label for="card${i}_${cards[i].alternatives[j].set.toUpperCase()}_${cards[i].alternatives[j].no}">
+					<label for="card${i}_${cards[i].alternatives[j].set.toUpperCase()}_${cards[i].alternatives[j].no}"
+						title="${cards[i].alternatives[j].set_name}\n${cards[i].alternatives[j].artist}">
 					${cards[i].alternatives[j].set.toUpperCase()}<br/>
 					<img src="${cards[i].alternatives[j].url}"
 						   style="height:7em"
-						   alt="${cards[i].alternatives[j].set.toUpperCase()}/${cards[i].alternatives[j].no}">
-					<label>
+						   alt="${cards[i].alternatives[j].set.toUpperCase()}/${cards[i].alternatives[j].no}">`
+					if (cards[i].alternatives[j].url_back)
+					{
+						inn+=`<img src="${cards[i].alternatives[j].url_back}"
+						   style="height:7em"
+						   alt="${cards[i].alternatives[j].set.toUpperCase()}/${cards[i].alternatives[j].no} (back)">`
+
+					}
+					
+					inn+=`</label>
 					</div>`
 				}
 				inn+="</form>"

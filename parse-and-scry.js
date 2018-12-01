@@ -35,6 +35,7 @@ function parse(dec)
 }
 
 
+
 /**
  * asks scryfall for teh kards
  */
@@ -62,7 +63,7 @@ function scry(cards)
 				{
 					var resp  = JSON.parse(req.response)
 					// TODO handle manage double-faced cards
-					cardResult.alternatives=[ {set:c.set, no:c.no, url:resp.image_uris.small} ] 
+					cardResult.alternatives=[ buildCuratedCard(resp) ] 
 				}
 			}
 			req.send()
@@ -97,11 +98,7 @@ function scry(cards)
 						var alternates = []
 						for (var d in nresp.data)
 						{
-							var a = {}
-							a.set = nresp.data[d].set
-							a.no = nresp.data[d].collector_number
-							a.url = nresp.data[d].image_uris.small
-							alternates.push(a)
+							alternates.push(buildCuratedCard(nresp.data[d]))
 						}
 						//console.log(alternates)
 						cardResult.alternatives = alternates
@@ -121,3 +118,22 @@ function scry(cards)
 	return result
 }
 
+/*
+ * returns a cut down object with only a few fields from a big scryfall object
+ */
+function buildCuratedCard(sfData)
+{
+	var r = {}
+	r.set = sfData.set
+	r.set_name = sfData.set_name
+	r.no = sfData.collector_number
+	r.artist = sfData.artist
+	if (sfData.image_uris)
+		r.url = sfData.image_uris.small
+	else
+	{
+		r.url = sfData.card_faces[0].image_uris.small
+		r.url_back = sfData.card_faces[1].image_uris.small
+	}
+	return r
+}
