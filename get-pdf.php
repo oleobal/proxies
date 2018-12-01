@@ -31,7 +31,6 @@
 	$proc = proc_open("python3 ./MTGProxyPrinter/main.py --out ./pdf/".$fname.".pdf -", $descriptors, $pipes);
 
 	
-	//echo "PUTAIN RASMUS";
 
 	if (is_resource($proc))
 	{
