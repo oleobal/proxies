@@ -51,12 +51,14 @@ function scry(cards)
 		if (c.no)
 		{
 			var req = new XMLHttpRequest()
-			console.log(c)
-			req.open("GET", "https://api.scryfall.com/cards/"+c.set+"/"+c.no, false)
+			req.open("GET", "https://api.scryfall.com/cards/"+c.set.toLowerCase()+"/"+c.no, false)
 			req.onreadystatechange = function()
 			{
 				if (this.readyState != 4 ||  this.status != 200)
-					return
+				{
+					if (this.status == 404)
+						alert(`Card not found: ${c.set}/${c.no} (${c.name})`)
+				}
 				if (req.response == "")
 				{ }
 				else
