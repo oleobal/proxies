@@ -72,15 +72,18 @@
 
 	}
 
-	function getPDFfromServer()
+
+	/**
+	 * goes through the right hand card list and returns a .dec-format list
+	 * if no options for a card have been selected, it writes that card's name
+	 * without edition info
+	 */
+	function parseCardForm()
 	{
 		var cid = currentIntermediaryDeck
 
 		if (!cid)
-		{
-			alert("Nothing loaded !")
 			return
-		}
 
 		var result = ""
 		for (var i in cid)
@@ -97,12 +100,26 @@
 					{
 						var sig = a[j].id.split("_")
 						result+=`${cid[i].count} ${cid[i].name} | ${sig[1]} | ${sig[2]}\n`
+						break
+					}
+					else if (j == a.length-1)
+					{
+						result+=`${cid[i].count} ${cid[i].name}\n`
 					}
 				}
 			}
 		}
 
-		alert(result)
+		return result
+	}
+
+	function getPDFfromServer(resultOfParseCardForm)
+	{
+
+		result = resultOfParseCardForm  
+		if (!result)
+			return
+
 		crypto.subtle.digest("SHA-256", new TextEncoder("utf-8").encode(result))
 		.then(function (ha)
 		{
@@ -119,7 +136,7 @@
 					alert("There seems to be an error :\n\n"+req.response)	
 					return
 				}
-				alert("Redirecting to PDF")
+				alert("Redirecting to PDF :\n"+window.location + "pdf/"+hash+".pdf")
 				window.location.href = window.location + "pdf/"+hash+".pdf";
 				
 			}
@@ -131,6 +148,74 @@
 		})
 
 	}
+
+	
+
+	// Intermediary functions that bridge the buttons and actual functions
+
+	function checkThingsAlright()
+	{
+		var cid = currentIntermediaryDeck
+
+		if (!cid)
+		{
+			alert("Nothing loaded !\n\nUse the \"Go!\" button at the top right.")
+			return false
+		}
+
+		var result = ""
+		for (var i in cid)
+		{
+			if (cid[i].alternatives.length == 1)
+				continue
+			else
+			{
+				var a = document.getElementsByName(`card${i}art`)
+				for (var j in a)
+				{
+					if (a[j].checked)
+					{
+						break
+					}
+					else if (j == a.length-1)
+					{
+						result+=`${cid[i].count} ${cid[i].name}\n`
+					}
+				}
+			}
+		}
+
+		if (result != "")
+		{
+			return window.confirm("Use default art for cards without choice?\n\nCards without art chosen:\n"+result)
+		}
+
+		return true
+	}
+
+	function getPDF()
+	{
+		if (!checkThingsAlright())
+			return
+
+		getPDFfromServer(parseCardForm());
+	}
+
+	function getDecklist()
+	{
+		if (!checkThingsAlright())
+			return
+
+		alert(parseCardForm());
+	}
+
+	function getDec()
+	{
+		if (!checkThingsAlright())
+			return
+		//TODO
+	}
+
 	</script>
 	<style>
 	body {
@@ -213,6 +298,8 @@
 	<div id='cardList'>
 	</div>
 	<div id='getPDF'>
-	<button onClick='getPDFfromServer()'>Get PDF</button>
+	<button onClick='getDec()' title="Get a .dec file" disabled >Get .dec</button>
+	<button onClick='getDecklist()' title="Get a text list with all the card choices made">Get Decklist</button>
+	<button onClick='getPDF()' title="Get a PDF file to print" >Get PDF</button>
 	</div>
 </div></body>
